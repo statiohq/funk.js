@@ -1,5 +1,5 @@
 {
-    "name": "funk.js",
+    "name": "@statio/funk.js",
     "version": "1.0.0",
     "main": "dist/lib.js",
     "typings": "dist/lib.d.ts",
