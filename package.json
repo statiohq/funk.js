@@ -1,6 +1,6 @@
 {
     "name": "@statio/funk.js",
-    "version": "1.0.0",
+    "version": "1.1.0-rc.1",
     "main": "dist/lib.js",
     "typings": "dist/lib.d.ts",
     "repository": "https://github.com/statiohq/funk.js.git",
