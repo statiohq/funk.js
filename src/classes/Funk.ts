@@ -1,5 +1,4 @@
-import WebSocket from "ws";
-import { FunkFullDataResponse, FunkOptions, FunkStation } from "../interfaces";
+import { FunkOptions, FunkStation } from "../interfaces";
 import { FunkMessage } from "../interfaces/FunkMessage";
 
 export class Funk {
@@ -10,22 +9,8 @@ export class Funk {
     constructor(options?: FunkOptions) {
         if (options) this.options = options;
         this.ws = new WebSocket(this.options.urlOverride || "wss://funk.statio.cc");
-        this.ws.on("open", () => {
-            if (!this.options.disableAutoPing)
-                setInterval(() => {
-                    this.emitPing();
-                }, 10000);
-            if (!this.options.dontGetFullDataAutomatically) this.emitGetFullData();
-        });
-        this.ws.on("message", (data: string) => {
-            const message: FunkMessage = JSON.parse(data);
-            if (this.options.debugLogging) console.log(`RECEIVED | ${JSON.stringify(message)}`);
-            if (message.type === "fullData") {
-                this.subscriptions.fullData.forEach((sub) => sub(message.data));
-            } else if (message.type === "stationChanged") {
-                this.subscriptions.stationChanged.forEach((sub) => sub(message.data));
-            }
-        });
+        this.ws.onopen = () => this.onOpen(this);
+        this.ws.onmessage = (data: string | MessageEvent<any>) => this.onMessage(this, data);
     }
 
     public on(event: "fullData", callback: (fullData: FunkStation[]) => void): void;
@@ -49,5 +34,28 @@ export class Funk {
     public send(message: FunkMessage) {
         this.ws.send(JSON.stringify(message));
         if (this.options.debugLogging) console.log(`SENT     | ${JSON.stringify(message)}`);
+    }
+
+    private onMessage(self: Funk, data: string | MessageEvent<any>) {
+        let message: FunkMessage;
+        if (typeof data === "string") {
+            message = JSON.parse(data);
+        } else {
+            message = JSON.parse(data.data);
+        }
+        if (self.options.debugLogging) console.log(`RECEIVED | ${JSON.stringify(message)}`);
+        if (message.type === "fullData") {
+            self.subscriptions.fullData.forEach((sub) => sub(message.data));
+        } else if (message.type === "stationChanged") {
+            self.subscriptions.stationChanged.forEach((sub) => sub(message.data));
+        }
+    }
+
+    private onOpen(self: Funk) {
+        if (!self.options.disableAutoPing)
+            setInterval(() => {
+                self.emitPing();
+            }, 10000);
+        if (!self.options.dontGetFullDataAutomatically) self.emitGetFullData();
     }
 }
