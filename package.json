@@ -26,9 +26,7 @@
         "funk",
         "statio"
     ],
-    "dependencies": {
-        "ws": "^8.2.3"
-    },
+    "dependencies": {},
     "devDependencies": {
         "@types/node": "^16.11.1",
         "@types/ws": "^8.2.0",
