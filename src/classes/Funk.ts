@@ -1,11 +1,28 @@
 import { FunkOptions, FunkStation } from "../interfaces";
 import { FunkMessage } from "../interfaces/FunkMessage";
 
+/**
+ * Class representing the Funk API Wrapper
+ */
 export class Funk {
+    /**
+     * @hidden
+     */
     private options: FunkOptions = {};
+
+    /**
+     * @hidden
+     */
     private ws: WebSocket;
+
+    /**
+     * @hidden
+     */
     private subscriptions: { fullData: ((fullData: FunkStation[]) => void)[]; stationChanged: ((station: FunkStation) => void)[] } = { fullData: [], stationChanged: [] };
 
+    /**
+     * Constructs the Funk API Wrapper
+     */
     constructor(options?: FunkOptions) {
         if (options) this.options = options;
         this.ws = new WebSocket(this.options.urlOverride || "wss://funk.statio.cc");
@@ -13,8 +30,16 @@ export class Funk {
         this.ws.onmessage = (data: string | MessageEvent<any>) => this.onMessage(this, data);
     }
 
+    /**
+     * Event returning full station data when the websocket is opened
+     */
     public on(event: "fullData", callback: (fullData: FunkStation[]) => void): void;
+
+    /**
+     * Event returning data updates to be merged with full data from websocket connection
+     */
     public on(event: "stationChanged", callback: (station: FunkStation) => void): void;
+
     public on(event: "fullData" | "stationChanged", callback: ((fullData: FunkStation[]) => void) | ((station: FunkStation) => void)): void {
         if (event === "fullData") {
             this.subscriptions.fullData.push(callback as any);
@@ -23,19 +48,31 @@ export class Funk {
         }
     }
 
+    /**
+     * Sends a ping message to the server (by default, automatic pinging is enabled)
+     */
     public emitPing() {
         this.send({ type: "ping" });
     }
 
+    /**
+     * Sends a message to the server requesting full data (by default, automatic full data request on connection is enabled)
+     */
     public emitGetFullData() {
         this.send({ type: "getFullData" });
     }
 
+    /**
+     * Sends a custom message to the Funk Server
+     */
     public send(message: FunkMessage) {
         this.ws.send(JSON.stringify(message));
         if (this.options.debugLogging) console.log(`SENT     | ${JSON.stringify(message)}`);
     }
 
+    /**
+     * @hidden
+     */
     private onMessage(self: Funk, data: string | MessageEvent<any>) {
         let message: FunkMessage;
         if (typeof data === "string") {
@@ -51,6 +88,9 @@ export class Funk {
         }
     }
 
+    /**
+     * @hidden
+     */
     private onOpen(self: Funk) {
         if (!self.options.disableAutoPing)
             setInterval(() => {
