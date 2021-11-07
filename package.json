@@ -9,6 +9,7 @@
     "private": false,
     "scripts": {
         "build": "rimraf dist && tsc",
+        "build:docs": "typedoc --out docs src/lib.ts",
         "prettier": "prettier --write src",
         "prettier:ci": "prettier --check src"
     },
@@ -32,6 +33,7 @@
         "@types/ws": "^8.2.0",
         "prettier": "^2.4.1",
         "rimraf": "^3.0.2",
+        "typedoc": "^0.22.8",
         "typescript": "^4.4.4"
     }
 }
