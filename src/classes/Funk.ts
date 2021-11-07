@@ -71,6 +71,13 @@ export class Funk {
     }
 
     /**
+     * Returns the current websocket connection
+     */
+    public getWs(): WebSocket {
+        return this.ws;
+    }
+
+    /**
      * @hidden
      */
     private onMessage(self: Funk, data: string | MessageEvent<any>) {
