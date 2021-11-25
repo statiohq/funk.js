@@ -27,7 +27,10 @@
         "funk",
         "statio"
     ],
-    "dependencies": {},
+    "dependencies": {
+        "@types/websocket": "^1.0.4",
+        "websocket": "^1.0.34"
+    },
     "devDependencies": {
         "@types/node": "^16.11.1",
         "@types/ws": "^8.2.0",
