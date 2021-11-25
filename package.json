@@ -28,11 +28,11 @@
         "statio"
     ],
     "dependencies": {
-        "@types/websocket": "^1.0.4",
         "websocket": "^1.0.34"
     },
     "devDependencies": {
         "@types/node": "^16.11.1",
+        "@types/websocket": "^1.0.4",
         "@types/ws": "^8.2.0",
         "prettier": "^2.4.1",
         "rimraf": "^3.0.2",
