@@ -30,10 +30,6 @@ export class Funk {
             this.ws = new w3cwebsocket(this.options.urlOverride || "wss://funk.statio.cc");
             this.ws.onopen = () => this.onOpen(this);
             this.ws.onmessage = ({ data }: IMessageEvent) => this.onMessage(this, data);
-            /*
-            this.ws.on("open", () => this.onOpen(this));
-            this.ws.on("message", (data: string | MessageEvent<any>) => this.onMessage(this, data));
-            */
         } else {
             this.ws = new WebSocket(this.options.urlOverride || "wss://funk.statio.cc");
             this.ws.onopen = () => this.onOpen(this);
