@@ -26,7 +26,7 @@ export class Funk {
      */
     constructor(options?: FunkOptions) {
         if (options) this.options = options;
-        if (typeof process === "object") {
+        if (typeof window === "undefined") {
             this.ws = new w3cwebsocket(this.options.urlOverride || "wss://funk.statio.cc");
             this.ws.onopen = () => this.onOpen(this);
             this.ws.onmessage = ({ data }: IMessageEvent) => this.onMessage(this, data);
