@@ -1,5 +1,6 @@
 import { FunkOptions, FunkStation } from "../interfaces";
 import { FunkMessage } from "../interfaces/FunkMessage";
+import { w3cwebsocket, IMessageEvent } from "websocket";
 
 /**
  * Class representing the Funk API Wrapper
@@ -13,7 +14,7 @@ export class Funk {
     /**
      * @hidden
      */
-    private ws: WebSocket;
+    private ws: WebSocket | w3cwebsocket;
 
     /**
      * @hidden
@@ -25,9 +26,15 @@ export class Funk {
      */
     constructor(options?: FunkOptions) {
         if (options) this.options = options;
-        this.ws = new WebSocket(this.options.urlOverride || "wss://funk.statio.cc");
-        this.ws.onopen = () => this.onOpen(this);
-        this.ws.onmessage = (data: string | MessageEvent<any>) => this.onMessage(this, data);
+        if (typeof window === "undefined") {
+            this.ws = new w3cwebsocket(this.options.urlOverride || "wss://funk.statio.cc");
+            this.ws.onopen = () => this.onOpen(this);
+            this.ws.onmessage = ({ data }: IMessageEvent) => this.onMessage(this, data);
+        } else {
+            this.ws = new WebSocket(this.options.urlOverride || "wss://funk.statio.cc");
+            this.ws.onopen = () => this.onOpen(this);
+            this.ws.onmessage = (data: string | MessageEvent<any>) => this.onMessage(this, data);
+        }
     }
 
     /**
@@ -73,15 +80,20 @@ export class Funk {
     /**
      * Returns the current websocket connection
      */
-    public getWs(): WebSocket {
+    public getWs(): WebSocket | w3cwebsocket {
         return this.ws;
     }
 
     /**
      * @hidden
      */
-    private onMessage(self: Funk, data: string | MessageEvent<any>) {
+    private onMessage(self: Funk, data: string | MessageEvent<any> | Buffer | IMessageEvent | ArrayBuffer) {
         let message: FunkMessage;
+
+        if (data instanceof Buffer || data instanceof ArrayBuffer) {
+            data = data.toString();
+        }
+
         if (typeof data === "string") {
             message = JSON.parse(data);
         } else {
